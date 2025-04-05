@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Confession</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background-color: #ffe6f0;
+      overflow: hidden;
+      position: relative;
+    }
+    #question-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-top: 60px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: 2rem;
+      margin: 0;
+    }
+    .gif {
+      width: 200px;
+      height: auto;
+      margin-top: 10px;
+    }
+    .btn {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .yes {
+      background-color: #4caf50;
+      color: white;
+      position: relative;
+      z-index: 10;
+    }
+    .no {
+      background-color: #f44336;
+      color: white;
+      position: absolute;
+    }
+    .confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+  <!-- Background music -->
+  <audio id="bgMusic" autoplay loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/10/30/audio_438964c74b.mp3?filename=romantic-piano-ambient-121660.mp3" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
+
+  <div id="question-container">
+    <h1 id="question">Hi Sam Will you be My Love?</h1>
+    <img
+      src="https://media.tenor.com/DvWwqDSpr3MAAAAj/mochi-peach.gif"
+      alt="First Mochi GIF"
+      class="gif"
+      id="gif"
+    />
+  </div>
+
+  <button class="btn yes" id="yesBtn" onclick="acceptLove()">Yes</button>
+  <button class="btn no" id="noBtn" onclick="moveNo()" style="left: 50%; top: 60%;">No</button>
+
+  <canvas id="confettiCanvas" class="confetti"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <script>
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const question = document.getElementById("question");
+    const gif = document.getElementById("gif");
+    const canvas = document.getElementById("confettiCanvas");
+
+    function acceptLove() {
+      const myConfetti = confetti.create(canvas, {
+        resize: true,
+        useWorker: true
+      });
+      myConfetti({
+        particleCount: 200,
+        spread: 100,
+        origin: { y: 0.6 }
+      });
+
+      document.body.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #fff0f5;">
+          <h1 style="font-size: 2.5rem;">Yay! I love you too!</h1>
+          <img src="https://media1.tenor.com/m/9ugBYqAZU3gAAAAC/love-i-love-you.gif" 
+               alt="Mochi Love GIF"
+               style="width: 250px; margin-top: 20px;" />
+        </div>
+      `;
+    }
+
+    function moveNo() {
+      const yesRect = yesBtn.getBoundingClientRect();
+      const questionRect = question.getBoundingClientRect();
+      const gifRect = gif.getBoundingClientRect();
+      const btnWidth = noBtn.offsetWidth;
+      const btnHeight = noBtn.offsetHeight;
+
+      let x, y;
+
+      do {
+        x = Math.random() * (window.innerWidth - btnWidth);
+        y = Math.random() * (window.innerHeight - btnHeight);
+      } while (
+        (x + btnWidth > yesRect.left &&
+         x < yesRect.right &&
+         y + btnHeight > yesRect.top &&
+         y < yesRect.bottom) ||
+        (x + btnWidth > questionRect.left &&
+         x < questionRect.right &&
+         y + btnHeight > questionRect.top &&
+         y < questionRect.bottom) ||
+        (x + btnWidth > gifRect.left &&
+         x < gifRect.right &&
+         y + btnHeight > gifRect.top &&
+         y < gifRect.bottom)
+      );
+
+      // Make sure it stays fully on-screen
+      x = Math.min(Math.max(0, x), window.innerWidth - btnWidth);
+      y = Math.min(Math.max(0, y), window.innerHeight - btnHeight);
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+    }
+  </script>
+</body>
+</html>
